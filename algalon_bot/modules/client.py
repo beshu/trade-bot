@@ -8,11 +8,12 @@ class Client:
         self.link = settings.API_LINK
         self.queue = asyncio.Queue()
         self.order_list = []
-        self.status_list = []
+        self.order_status = None
+        self.token = None
 
-    def clear(self):
+    def clear_all(self):
         self.order_list.clear()
-        self.status_list.clear()
+        self.status = None
 
     async def producer(self, msg):
         await self.queue.put(msg)
@@ -21,24 +22,25 @@ class Client:
     async def consumer(self):
         while True:
             msg = await self.queue.get()
+            print("Retreived from queue")
             async with websockets.connect(self.link) as websocket:
                 await websocket.send(json.dumps(msg))
                 response = json.loads(await websocket.recv())
                 print(response)
-                if response['id'] == 5275 or 2148:
+                if response['id'] == 5275 or response['id'] == 2148:
                     self.order_list.append(response)
                 elif response['id'] == 4122:
-                    self.clear()
+                    self.clear_all()
                 elif response['id'] == 4316:
-                    self.status_list.append(response)
+                    self.order_status = response['result']['order_state']
+                elif response['id'] == 9929:
+                    self.token = response['result']['access_token']
                 self.queue.task_done()
 
     async def get_order_id(self):
-        print(self.order_list)
-        return await self.order_list[0]['result']['order']['order_id']
+        return self.order_list[0]['result']['order']['order_id']
 
-    async def get_order_status(self):
-        return await self.status_list[0]['result']['order_state']
+    
 
 
     

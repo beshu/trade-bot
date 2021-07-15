@@ -21,7 +21,8 @@ def auth_msg():
         "params" : {
             "grant_type" : "client_credentials",
             "client_id" : settings.CLIENT_ID,
-            "client_secret" : settings.CLIENT_SECRET
+            "client_secret" : settings.CLIENT_SECRET,
+            "scope": "session:test",
             }
     }
     return msg

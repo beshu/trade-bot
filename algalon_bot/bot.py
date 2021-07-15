@@ -39,10 +39,12 @@ async def status_order_msg(client):
     order_id = await client.get_order_id()
     msg = messages.order_status_msg()
     msg['params']['order_id'] = order_id
+    msg['params']['access_token'] = client.token
     return msg
 
-async def cancel_all_msg():
+async def cancel_all_msg(client):
     msg = messages.cancel_all_msg()
+    msg['params']['access_token'] = client.token
     return msg
 
 async def auth_msg():
@@ -58,32 +60,35 @@ async def main():
     client = Client()
     buy_msg = await buy_order_msg()
     sell_msg = await sell_order_msg()
-    auth_producer = asyncio.create_task(client.producer(await auth_msg()))
-    buy_producer = asyncio.create_task(client.producer(buy_msg))
-    sell_producer = asyncio.create_task(client.producer(sell_msg))
-    cancel_producer = asyncio.create_task(client.producer(await cancel_all_msg()))
-    heartbeat_producer = asyncio.create_task(client.producer(await heart_msg()))
+    #auth_producer = asyncio.create_task(client.producer(await auth_msg()))
+    #buy_producer = asyncio.create_task(client.producer(buy_msg))
+    #sell_producer = asyncio.create_task(client.producer(sell_msg))
+    #cancel_producer = asyncio.create_task(client.producer(await cancel_all_msg()))
+    #heartbeat_producer = asyncio.create_task(client.producer(await heart_msg()))
     consumers = [asyncio.create_task(client.consumer())
                  for _ in range(10)]
 
-    await asyncio.gather(auth_producer, heartbeat_producer)
+    print("Hello")
+    await asyncio.gather(client.producer(await auth_msg()), client.producer(await heart_msg()))
     print("Authorized, heartbeat instantiated")
 
     while True:
         print("Entering while-true loop lvl 1")
         await asyncio.sleep(5)
-        if not client.order_list:
-            await asyncio.gather(buy_producer)
+        print(client.order_list)
+        if len(client.order_list) == 0:
+            buy_msg['params']['access_token'] = client.token
+            await client.producer(buy_msg)
             print("Started buy producer")
             while True:
-                status_producer = asyncio.create_task(client.producer(await status_order_msg(client)))
-                await asyncio.gather(status_producer)
+                status_msg = await status_order_msg(client)
+                await client.producer(status_msg)
                 print("Started status producer for buy")
-                if await client.get_order_status() == 'filled':
+                if client.order_status == 'filled':
                     print("Successfully bought")
                     break
                 elif await bad_price('buy', buy_msg):
-                    await asyncio.gather(cancel_producer)
+                    await client.producer(await cancel_all_msg(client))
                     print("Bad price for buy")
                     break
                 else:
@@ -91,17 +96,19 @@ async def main():
         else:
             continue
         if client.order_list:
-            await asyncio.gather(sell_producer)
+            client.clear_all()
+            sell_msg['params']['access_token'] = client.token
+            await client.producer(sell_msg)
             print("Started sell producer")
             while True:
-                status_producer = asyncio.create_task(client.producer(await status_order_msg(client)))
-                await asyncio.gather(status_producer)
+                await client.producer(await status_order_msg(client))
                 print("Created status producer for sell")
-                if await client.get_order_status() == 'filled':
+                if client.order_status == 'filled':
                     print("Successfully sold")
+                    client.clear_all()
                     break
                 elif await bad_price('sell', sell_msg):
-                    await asyncio.gather(cancel_producer)
+                    await client.producer(await cancel_all_msg(client))
                     print("Bad price for sell")
                     break
                 else:
