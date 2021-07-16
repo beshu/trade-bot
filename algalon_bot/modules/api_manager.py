@@ -3,6 +3,7 @@ import asyncio
 class APIManager:
     def __init__(self):
         self.queue = asyncio.Queue()
+        self.api_consumers = [asyncio.create_task(self.consumer()) for _ in range(5)]
         self.order = None
         self.order_state = None
         self.token = None
@@ -10,6 +11,7 @@ class APIManager:
 
     async def producer(self, response):
         await self.queue.put(response)
+        await asyncio.sleep(1)
 
     async def consumer(self):
         while True:
@@ -30,6 +32,10 @@ class APIManager:
                 self.token = response['result']['access_token']
             self.queue.task_done()
 
+    async def purge_consumers(self):
+        for c in self.api_consumers:
+            c.cancel()
+            print("api consumer purged")
     
     
 

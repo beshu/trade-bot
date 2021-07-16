@@ -27,7 +27,7 @@ def auth_msg():
     }
     return msg
 
-def buy_msg():
+def buy_msg(client, price):
     msg = {
         "jsonrpc" : "2.0",
         "id" : 5275,
@@ -37,11 +37,13 @@ def buy_msg():
             "amount" : settings.AMOUNT,
             "type" : "limit",
             "label" : "algo",
+            "price" : price,
+            "access_token" : client.get_token()
         }
     }
     return msg
 
-def sell_msg():
+def sell_msg(client, price):
     msg = {
         "jsonrpc" : "2.0",
         "id" : 2148,
@@ -50,28 +52,33 @@ def sell_msg():
             "instrument_name" : settings.INSTRUMENT_NAME,
             "amount" : settings.AMOUNT,
             "type" : "limit",
+            "price" : price,
+            "access_token" : client.get_token()
         }
     }
     return msg
 
-def cancel_all_msg():
+def cancel_all_msg(client):
     msg = {
         "jsonrpc" : "2.0",
         "id" : 4122,
         "method" : "private/cancel_all_by_instrument",
         "params" : {
             "instrument_name" : settings.INSTRUMENT_NAME,
-            "type" : "all"
+            "type" : "all",
+            "access_token" : client.get_token()
         }
     }
     return msg
 
-def order_status_msg():
+def order_status_msg(client):
     msg = {
         "jsonrpc" : "2.0",
         "id" : 4316,
         "method" : "private/get_order_state",
         "params" : {
+            "order_id" : client.get_order_id(),
+            "access_token" : client.get_token()
         }
     }
     return msg
@@ -86,14 +93,3 @@ def heartbeat_msg():
         }
     }
     return msg
-
-async def ticker(msg):
-    async with websockets.connect(settings.API_LINK) as websocket:
-        await websocket.send(msg)
-        response = await websocket.recv()
-        return response
-
-async def get_mark_price(msg):
-    response_str = await ticker(json.dumps(msg))
-    response = json.loads(response_str)
-    return response['result']['mark_price']

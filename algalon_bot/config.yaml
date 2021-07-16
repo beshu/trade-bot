@@ -1,6 +1,6 @@
 robot:
-    gap: 10.0
-    gap_ignore: 5.0
+    gap: 100.0
+    gap_ignore: 50.0
 exchange:
     client_id: oUJiardE
     client_secret: erxsqCtEKczqtTXHpMDR106I-Gs60wyPtPQt8LHk9Jw
