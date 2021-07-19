@@ -1,7 +1,7 @@
 from algalon_bot.modules.db import models
 
 async def get_order(db, order_id):
-    db_order = await db.query(models.Order).filter(models.Order.order_id == order_id).first()
+    db_order = await db.get(models.Order, int(order_id))
     if not db_order:
         return None
     return db_order
@@ -23,10 +23,13 @@ async def update_order(db, order, order_id):
     db_order = await get_order(db, order_id)
     if not db_order:
         return None
-    update_data = order.dict(exclude_unset=True)
+    update_data = order.dict()
 
     for key, value in update_data.items():
-        setattr(db_order, key, value)
+        if key == 'order_state':
+            db_order.filled = value
+        else:
+            setattr(db_order, key, value)
 
     db.add(db_order)
     await db.commit()
@@ -34,11 +37,11 @@ async def update_order(db, order, order_id):
     return db_order
 
 async def delete_order(db, order_id):
-    db_order = get_order(db, order_id)
+    db_order = await get_order(db, int(order_id))
     if not db_order:
         return None
-    db.delete(db_order)
-    await db.commit(db_order)
+    await db.delete(db_order)
+    await db.commit()
     return db_order
 
 

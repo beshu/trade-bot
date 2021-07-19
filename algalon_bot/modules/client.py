@@ -51,6 +51,15 @@ class Client:
     def get_token(self):
         return self.api_manager.token
     
+    def get_token_expire(self):
+        return self.api_manager.token_expires
+    
+    def get_refresh_token(self):
+        return self.api_manager.refresh_token
+
+    def set_token(self, refresh_token):
+        self.api_manager.token = refresh_token
+    
     def get_switch(self):
         return self.api_manager.switch
 

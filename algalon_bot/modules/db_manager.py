@@ -1,4 +1,4 @@
-from algalon_bot.modules.db.crud import create_order, update_order
+from algalon_bot.modules.db.crud import create_order, update_order, delete_order
 
 
 class DbManager():
@@ -13,8 +13,14 @@ class DbManager():
             await conn.run_sync(self.base.metadata.create_all)
 
     async def place_order(self, order):
-        await create_order(self.db, order)
+        async with self.db:
+            await create_order(self.db, order)
     
     async def update_order(self, order, order_id):
-        await update_order(self.db, order, order_id)
+        async with self.db:
+            await update_order(self.db, order, order_id)
+    
+    async def remove_order(self, order_id):
+        async with self.db:
+            await delete_order(self.db, order_id)
 

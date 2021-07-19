@@ -3,14 +3,15 @@ from algalon_bot.modules.db import models
 from algalon_bot.settings import SQLALCHEMY_DATABASE_SYNC_URI
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event, create_engine
+from pydantic import BaseModel
 from sqlalchemy_utils import database_exists, create_database, drop_database
 import pytest
 
 
 
+
 def get_test_db_url():
     return f"{SQLALCHEMY_DATABASE_SYNC_URI}_bottest"
-
 
 @pytest.fixture
 def test_db():
@@ -84,3 +85,26 @@ def test_order(test_db):
     test_db.commit()
     return db_order
 
+@pytest.fixture
+def test_order_id(test_order):
+    return test_order.order_id
+
+@pytest.fixture
+def test_pydantic_order():
+    class Order(BaseModel):
+        order_id: int
+        order_direction: str
+        price: float
+        order_state: bool
+        creation_timestamp: int
+    return Order(
+        order_id = 6144550810,
+        order_direction='buy',
+        price=31359.5,
+        order_state=False,
+        creation_timestamp=1626626116059,
+    )
+
+@pytest.fixture
+def test_order_model():
+    return models.Order

@@ -7,6 +7,8 @@ class APIManager:
         self.order = None
         self.order_state = None
         self.token = None
+        self.token_expires = None
+        self.refresh_token = None
         self.switch = False
 
     async def producer(self, response):
@@ -30,6 +32,8 @@ class APIManager:
             #auth
             elif response['id'] == 9929:
                 self.token = response['result']['access_token']
+                self.token_expires = response['result']['expires_in']
+                self.refresh_token = response['result']['refresh_token']
             self.queue.task_done()
 
     async def purge_consumers(self):
