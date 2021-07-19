@@ -48,6 +48,8 @@ class Client:
     def switch(self):
         self.api_manager.switch = not self.get_switch()
     
+    def set_switch(self, old_client):
+        self.api_manager.switch = old_client.get_switch()
     
 
     

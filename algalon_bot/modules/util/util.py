@@ -29,3 +29,9 @@ def get_gap_ignore(config):
 def get_amount(config):
     return config['exchange']['amount']
 
+def get_sync_db_uri(config):
+    return config['db']['sync_uri']
+
+def get_async_db_uri(config):
+    return config['db']['async_uri']
+

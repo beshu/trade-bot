@@ -7,4 +7,6 @@ exchange:
     api_link: wss://test.deribit.com/ws/api/v2
     instrument_name: BTC-PERPETUAL
     amount: 10
-    
+db:
+    sync_uri: postgresql+psycopg2://postgres:password@0.0.0.0:5432/
+    async_uri: postgresql+asyncpg://postgres:password@0.0.0.0:5432/
