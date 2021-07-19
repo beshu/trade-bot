@@ -33,14 +33,23 @@ class Client:
         for c in self.consumers:
             c.cancel()
 
+    def get_order_price(self):
+        return self.api_manager.order['result']['order']['price']
+    
+    def get_order_direction(self):
+        return self.api_manager.order['result']['order']['direction']
+
     def get_order_id(self):
         return self.api_manager.order['result']['order']['order_id']
-
-    def get_token(self):
-        return self.api_manager.token
+    
+    def get_order_timestamp(self):
+        return self.api_manager.order['result']['order']['creation_timestamp']
     
     def get_order_state(self):
         return self.api_manager.order_state
+
+    def get_token(self):
+        return self.api_manager.token
     
     def get_switch(self):
         return self.api_manager.switch

@@ -75,7 +75,7 @@ def test_order(test_db):
     """
     db_order = models.Order(
         order_id = 6144550810,
-        order_type='buy',
+        order_direction='buy',
         price=31359.5,
         filled=False,
         creation_timestamp=1626626116059,
