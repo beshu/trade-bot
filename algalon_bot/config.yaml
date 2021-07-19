@@ -8,5 +8,5 @@ exchange:
     instrument_name: BTC-PERPETUAL
     amount: 10
 db:
-    sync_uri: postgresql+psycopg2://postgres:password@0.0.0.0:5432/
-    async_uri: postgresql+asyncpg://postgres:password@0.0.0.0:5432/
+    sync_uri: postgresql+psycopg2://postgres:password@postgres:5432/
+    async_uri: postgresql+asyncpg://postgres:password@postgres:5432/

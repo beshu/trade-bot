@@ -1,5 +1,14 @@
-version: '3.9'
+version: '3.8'
 services:
+  bot:
+    build: .
+    command: python ./algalon_bot/bot.py
+    environment:
+      PYTHONPATH: .
+    volumes:
+      - ./:/usr/src/app/:cached
+    depends_on:
+      - "postgres"
   postgres:
     image: postgres:12
     restart: always
