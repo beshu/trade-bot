@@ -2,11 +2,5 @@ robot:
     gap: 20.0
     gap_ignore: 10.0
 exchange:
-    client_id: oUJiardE
-    client_secret: erxsqCtEKczqtTXHpMDR106I-Gs60wyPtPQt8LHk9Jw
-    api_link: wss://test.deribit.com/ws/api/v2
     instrument_name: BTC-PERPETUAL
     amount: 10
-db:
-    sync_uri: postgresql+psycopg2://postgres:password@postgres:5432/
-    async_uri: postgresql+asyncpg://postgres:password@postgres:5432/

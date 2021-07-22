@@ -1,3 +1,4 @@
+from datetime import datetime
 import pathlib
 import yaml
 
@@ -11,15 +12,6 @@ def get_config():
 def get_instrument_name(config):
     return config['exchange']['instrument_name']
 
-def get_client_id(config):
-    return config['exchange']['client_id']
-
-def get_client_secret(config):
-    return config['exchange']['client_secret']
-
-def get_api_link(config):
-    return config['exchange']['api_link']
-
 def get_gap(config):
     return config['robot']['gap']
 
@@ -29,9 +21,6 @@ def get_gap_ignore(config):
 def get_amount(config):
     return config['exchange']['amount']
 
-def get_sync_db_uri(config):
-    return config['db']['sync_uri']
-
-def get_async_db_uri(config):
-    return config['db']['async_uri']
-
+def expired(client):
+    now = datetime.utcnow().timestamp()
+    return True if now > client.get_token_expire() else False

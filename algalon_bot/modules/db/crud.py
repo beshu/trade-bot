@@ -11,7 +11,7 @@ async def create_order(db, order):
         order_id = order.order_id,
         order_direction=order.order_direction,
         price=order.price,
-        filled=order.order_state,
+        order_state=order.order_state,
         creation_timestamp=order.creation_timestamp,
     )
     db.add(db_order)
@@ -26,10 +26,7 @@ async def update_order(db, order, order_id):
     update_data = order.dict()
 
     for key, value in update_data.items():
-        if key == 'order_state':
-            db_order.filled = value
-        else:
-            setattr(db_order, key, value)
+        setattr(db_order, key, value)
 
     db.add(db_order)
     await db.commit()
